@@ -1,13 +1,57 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "gilroy-light";
+  src: url(/src/assets/fonts/gilroy/Gilroy-Light.ttf);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@font-face {
+  font-family: "gilroy-regular";
+  src: url(/src/assets/fonts/gilroy/Gilroy-Regular.ttf);
+}
+
+@font-face {
+  font-family: "gilroy-medium";
+  src: url(/src/assets/fonts/gilroy/Gilroy-Medium.ttf);
+}
+
+@font-face {
+  font-family: "gilroy-bold";
+  src: url(/src/assets/fonts/gilroy/Gilroy-Bold.ttf);
+}
+
+* {
+  margin: 0px;
+}
+h1 {
+  font-family: "gilroy-bold";
+  font-size: 2rem;
+  color: #fff;
+}
+
+h2,
+input {
+  font-family: "gilroy-regular";
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+h3 {
+  font-family: "gilroy-medium";
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+h4 {
+  font-family: "gilroy-light";
+  font-size: 1rem;
+  color: #fff;
+}
+
+.buttonText {
+  font-family: "gilroy-bold";
+  font-size: 0.8rem;
+  color: #fff;
 }
