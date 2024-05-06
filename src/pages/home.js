@@ -17,7 +17,7 @@ function Home() {
   const fileInputRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [user, setUser] = useState({
-    id: 1,
+    id: 2,
     username: "void",
     email: "",
     password: "",
@@ -27,7 +27,9 @@ function Home() {
     content: "",
     userId: user.id,
   });
+
   const [posts, setPosts] = useState([]);
+  const [editedPost, setEditedPost] = useState("");
 
   useEffect(() => {
     inputRef.current.focus();
@@ -36,7 +38,7 @@ function Home() {
 
   const fetchPosts = () => {
     api
-      .get(`/api/posts/1`)
+      .get(`/api/posts`)
       .then((res) => {
         console.log(res.data);
         setPosts(res.data);
@@ -55,6 +57,23 @@ function Home() {
       })
       .catch((err) => {
         console.log(err);
+      });
+  };
+
+  const editPost = (editedPost, id) => {
+    if (editedPost === "") return alert("Can't leave it blank");
+
+    api
+      .post("/api/updateNote", {
+        content: editedPost,
+        id: id,
+      })
+      .then((res) => {
+        fetchPosts();
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("Error updating post");
       });
   };
 
@@ -99,37 +118,46 @@ function Home() {
               .slice()
               .reverse()
               .map((post, id) => (
-                <div className="flex flex-row">
-                  <div className="flex flex-col mx-4 xs:w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-150">
-                    <div
-                      key={id}
-                      className="flex flex-row justify-between mb-1"
+                <div className="flex flex-col mx-4 xs:w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-150">
+                  <div key={id} className="flex flex-row justify-between mb-3">
+                    <div className="flex flex-row gap-2">
+                      <h4>@{user.username}</h4>
+                      <button className="hover:cursor-pointer">
+                        <img src={follow} width={15} />
+                      </button>
+                    </div>
+                    <h4>{post.category}</h4>
+                  </div>
+                  <div className="flex flex-row mb-2 items-center justify-between gap-10">
+                    <h3 className="max-w-[800px]">{post.content}</h3>
+                    <h4>{formatSubmittedTime(post.submitted_time)}</h4>
+                  </div>
+                  <div className="flex flex-row gap-4">
+                    <div className="flex flex-row items-center gap-2">
+                      <span
+                        className={`opacity-100 hover:cursor-pointer transition-all duration-300`}
+                      >
+                        <img src={like} width={18} />
+                      </span>
+                      <h5>{post.likes}</h5>
+                    </div>
+                    <span
+                      onClick={(editedPost) => editPost(editedPost, post.id)}
+                      className={`${
+                        post.user_id !== user.id ? "hidden" : ""
+                      }  hover:cursor-pointer transition-all duration-300`}
                     >
-                      <div className="flex flex-row gap-2">
-                        <h4>@{user.username}</h4>
-                        <button className="hidden hover:flex hover:cursor-pointer">
-                          <img src={follow} width={15} />
-                        </button>
-                      </div>
-                      <h4>{post.category}</h4>
-                    </div>
-                    <div className="flex flex-row mb-2 items-center justify-between gap-10">
-                      <h3 className="max-w-[800px]">{post.content}</h3>
-                      <h4>{formatSubmittedTime(post.submitted_time)}</h4>
-                    </div>
-                    <hr className="w-full border-t-1 border-[#ffffff2c] my-4" />
-                  </div>
-                  <div className=" hover:flex flex-col gap-4 transition-all duration-300">
-                    <span className="p-5  opacity-0 hover:opacity-100 hover:cursor-pointer transition-all duration-300">
-                      <img src={like} width={15} />
+                      <img src={edit} width={18} />
                     </span>
-                    <span className="p-5  opacity-0 hover:opacity-100 hover:cursor-pointer transition-all duration-300">
-                      <img src={edit} width={15} />
-                    </span>
-                    <span className="p-5  opacity-0 hover:opacity-100 hover:cursor-pointer transition-all duration-300">
-                      <img src={remove} width={15} />
+                    <span
+                      className={`${
+                        post.user_id !== user.id ? "hidden" : ""
+                      }  hover:cursor-pointer transition-all duration-300`}
+                    >
+                      <img src={remove} width={18} />
                     </span>
                   </div>
+                  <hr className="w-full border-t-1 border-[#ffffff2c] my-4" />
                 </div>
               ))
           ) : (

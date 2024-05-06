@@ -57,19 +57,16 @@ app.get("/api/testdb", (req, res) => {
   });
 });
 
-app.get("/api/posts/:userId", (req, res) => {
-  const userId = req.params.userId;
-
-  // Retrieve notes for the specified user from the database
-  const query =
-    "SELECT content, category, submitted_time  FROM posts WHERE user_id = ?";
-  pool.query(query, [userId], (err, results) => {
+app.get("/api/posts", (req, res) => {
+  // Retrieve all posts from the database
+  const query = "SELECT * FROM posts";
+  pool.query(query, (err, results) => {
     if (err) {
-      console.error("Error fetching notes:", err);
+      console.error("Error fetching posts:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
 
-    // Return the fetched notes
+    // Return the fetched posts
     res.status(200).json(results);
   });
 });
