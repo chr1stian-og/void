@@ -91,6 +91,39 @@ app.post("/api/newPost", (req, res) => {
   });
 });
 
+app.post("/api/likePost", (req, res) => {
+  const { userId, postId } = req.body;
+
+  // Check if the user has already liked the post
+  pool.query(
+    "SELECT * FROM  WHERE user_id = ? AND post_id = ?",
+    [userId, postId],
+    (err, results) => {
+      if (err) {
+        console.error("Error checking if user liked post:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (results.length > 0) {
+        return res.status(400).json({ error: "User already liked this post" });
+      }
+
+      // User hasn't liked the post yet, proceed with liking the post
+      pool.query(
+        "INSERT INTO likes (user_id, post_id) VALUES (?, ?)",
+        [userId, postId],
+        (err) => {
+          if (err) {
+            console.error("Error liking post:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
+          res.status(200).json({ message: "Post liked successfully" });
+        }
+      );
+    }
+  );
+});
+
 app.post("/api/signin", (req, res) => {
   // const Name = "Void";
   // const username = "void";

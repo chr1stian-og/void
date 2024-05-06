@@ -77,6 +77,14 @@ function Home() {
       });
   };
 
+  const likePost = (likedPostId) => {
+    api
+      .post("/api/likePost", { userId: user.id, postId: likedPostId })
+      .then((res) => {
+        fetchPosts();
+      });
+  };
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     setSelectedImage(file);
@@ -122,7 +130,11 @@ function Home() {
                   <div key={id} className="flex flex-row justify-between mb-3">
                     <div className="flex flex-row gap-2">
                       <h4>@{user.username}</h4>
-                      <button className="hover:cursor-pointer">
+                      <button
+                        className={` ${
+                          post.user_id !== user.id ? "" : "hidden"
+                        } hover:cursor-pointer`}
+                      >
                         <img src={follow} width={15} />
                       </button>
                     </div>
@@ -135,9 +147,31 @@ function Home() {
                   <div className="flex flex-row gap-4">
                     <div className="flex flex-row items-center gap-2">
                       <span
-                        className={`opacity-100 hover:cursor-pointer transition-all duration-300`}
+                        onClick={() => likePost(post.id)}
+                        className={`opacity-100 hover:cursor-pointer ml-[-5px] transition-all duration-300`}
                       >
-                        <img src={like} width={18} />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={`h-5 w-6 ${
+                            post.user_id === user.id && post.likes > 0
+                              ? "text-[#FF0054]"
+                              : "none"
+                          }`}
+                          fill={`${
+                            post.user_id === user.id && post.likes > 0
+                              ? "#FF0054"
+                              : "none"
+                          }`}
+                          viewBox="0 0 16 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 21l-1.35-1.214C5.85 15.88 2 12.35 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.42.81 4.5 2.09C13.08 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.85-3.85 7.38-8.65 11.29L12 21z"
+                          />
+                        </svg>
                       </span>
                       <h5>{post.likes}</h5>
                     </div>
@@ -165,7 +199,7 @@ function Home() {
           )}
         </div>
 
-        <div className="fixed bottom-0 w-full flex justify-center">
+        <div className="fixed bottom-5 w-full flex justify-center">
           <div className="flex flex-row mx-20 mt-52 justify-center items-center gap-2">
             <select
               className="bg-[#FF0054] border-0 px-4 py-2 rounded-md"

@@ -27,20 +27,25 @@
 }
 h1 {
   font-family: "gilroy-bold";
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: #fff;
 }
 
-h2,
+h2 {
+  font-family: "gilroy-regular";
+  font-size: 1rem;
+  color: #fff;
+}
+
 input {
   font-family: "gilroy-regular";
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #fff;
 }
 
 h3 {
   font-family: "gilroy-medium";
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #fff;
 }
 
@@ -48,7 +53,6 @@ h4 {
   font-family: "gilroy-light";
   font-size: 1rem;
   color: #fff;
-
 }
 h5 {
   font-family: "gilroy-light";
