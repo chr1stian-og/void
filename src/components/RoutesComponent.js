@@ -6,25 +6,19 @@ import Home from "../pages/home";
 import { useState } from "react";
 
 function RoutesComponent() {
-  //   const [user, setUser] = useState({ id: 0, email: "", password: "" });
+  const [user, setUser] = useState({ id: 0, email: "", password: "" });
 
-  //   const updateUserId = (newId) => {
-  //     setUser((prevUser) => ({ ...prevUser, id: newId }));
-  //   };
+  const updateUserId = (newId) => {
+    setUser((prevUser) => ({ ...prevUser, id: newId }));
+  };
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Login user={user} />} />
+        <Route path="/login" element={<Login user={user} />} />
         <Route path="/home" element={<Home />} />
-        {/* <Route
-          path="/login"
-          element={<Login user={user} updateUserId={updateUserId} />}
-        />
-        <Route
-          path="/signin"
-          element={<Signin user={user} updateUserId={updateUserId} />}
-        /> */}
+        <Route path="/signin" element={<Signin user={user} />} />
       </Routes>
     </>
   );

@@ -17,11 +17,12 @@ function Home() {
   const fileInputRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [user, setUser] = useState({
-    id: 2,
+    id: 4,
     username: "void",
     email: "",
     password: "",
   });
+
   const [newPost, setNewPost] = useState({
     category: "Thought",
     content: "",
@@ -92,7 +93,7 @@ function Home() {
 
   const formatSubmittedTime = (timeString) => {
     const date = new Date(timeString);
-    const formattedDate = date.toLocaleDateString(); // Adjust the format as needed
+    // const formattedDate = date.toLocaleDateString(); // Adjust the format as needed
     const formattedTime = date.toLocaleTimeString(); // Adjust the format as needed
     return `${formattedTime}`;
   };
@@ -126,8 +127,8 @@ function Home() {
               .slice()
               .reverse()
               .map((post, id) => (
-                <div className="flex flex-col mx-4 xs:w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-150">
-                  <div key={id} className="flex flex-row justify-between mb-3">
+                <div className="flex flex-col mx-4 xs:w-[450px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-150">
+                  <div key={id} className="flex flex-row justify-between mb-1">
                     <div className="flex flex-row gap-2">
                       <h4>@{user.username}</h4>
                       <button
@@ -140,28 +141,22 @@ function Home() {
                     </div>
                     <h4>{post.category}</h4>
                   </div>
-                  <div className="flex flex-row mb-2 items-center justify-between gap-10">
+                  <div className="flex flex-row items-center justify-between gap-10">
                     <h3 className="max-w-[800px]">{post.content}</h3>
                     <h4>{formatSubmittedTime(post.submitted_time)}</h4>
                   </div>
                   <div className="flex flex-row gap-4">
-                    <div className="flex flex-row items-center gap-2">
+                    <div className="flex flex-row items-center gap-2 ">
                       <span
                         onClick={() => likePost(post.id)}
-                        className={`opacity-100 hover:cursor-pointer ml-[-5px] transition-all duration-300`}
+                        className={`opacity-100 p-2 hover:cursor-pointer ml-[-10px] mr-[-8px] transition-all duration-300`}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className={`h-5 w-6 ${
-                            post.user_id === user.id && post.likes > 0
-                              ? "text-[#FF0054]"
-                              : "none"
+                          className={`h-5 w-6 hover:cursor-pointer ${
+                            post.likes > 0  ? "text-[#FF0054]" : "none"
                           }`}
-                          fill={`${
-                            post.user_id === user.id && post.likes > 0
-                              ? "#FF0054"
-                              : "none"
-                          }`}
+                          fill={`${post.likes > 0 ? "#FF0054" : "none"}`}
                           viewBox="0 0 16 24"
                           stroke="currentColor"
                         >
@@ -179,14 +174,14 @@ function Home() {
                       onClick={(editedPost) => editPost(editedPost, post.id)}
                       className={`${
                         post.user_id !== user.id ? "hidden" : ""
-                      }  hover:cursor-pointer transition-all duration-300`}
+                      }  hover:cursor-pointer p-2 transition-all duration-300`}
                     >
                       <img src={edit} width={18} />
                     </span>
                     <span
                       className={`${
                         post.user_id !== user.id ? "hidden" : ""
-                      }  hover:cursor-pointer transition-all duration-300`}
+                      }  hover:cursor-pointer p-2 transition-all duration-300`}
                     >
                       <img src={remove} width={18} />
                     </span>
@@ -222,7 +217,7 @@ function Home() {
                 setNewPost({ ...newPost, content: e.target.value });
               }}
               placeholder="Share your thoughts..."
-              className="border-[#8884] md:w-[350px] lg:w-[500px] border-0 px-4 py-2 rounded-md"
+              className="hover:cursor-text z-10 border-[#8884] md:w-[350px] lg:w-[500px] border-0 px-4 py-2 rounded-md"
             />
 
             <button

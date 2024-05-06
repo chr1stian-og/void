@@ -91,12 +91,25 @@ app.post("/api/newPost", (req, res) => {
   });
 });
 
+app.get("/api/getLikes", (req, res) => {
+  const query = "SELECT * FROM likes";
+  pool.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching posts:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Return the fetched posts
+    res.status(200).json(results);
+  });
+});
+
 app.post("/api/likePost", (req, res) => {
   const { userId, postId } = req.body;
 
   // Check if the user has already liked the post
   pool.query(
-    "SELECT * FROM  WHERE user_id = ? AND post_id = ?",
+    "SELECT * FROM likes WHERE user_id = ? AND post_id = ?",
     [userId, postId],
     (err, results) => {
       if (err) {
@@ -105,30 +118,37 @@ app.post("/api/likePost", (req, res) => {
       }
 
       if (results.length > 0) {
-        return res.status(400).json({ error: "User already liked this post" });
-      }
-
-      // User hasn't liked the post yet, proceed with liking the post
-      pool.query(
-        "INSERT INTO likes (user_id, post_id) VALUES (?, ?)",
-        [userId, postId],
-        (err) => {
-          if (err) {
-            console.error("Error liking post:", err);
-            return res.status(500).json({ error: "Internal Server Error" });
+        // User already liked the post, proceed with removing the like
+        pool.query(
+          "DELETE FROM likes WHERE user_id = ? AND post_id = ?",
+          [userId, postId],
+          (err) => {
+            if (err) {
+              console.error("Error removing like from post:", err);
+              return res.status(500).json({ error: "Internal Server Error" });
+            }
+            res.status(200).json({ message: "Like removed successfully" });
           }
-          res.status(200).json({ message: "Post liked successfully" });
-        }
-      );
+        );
+      } else {
+        // User hasn't liked the post yet, proceed with liking the post
+        pool.query(
+          "INSERT INTO likes (user_id, post_id) VALUES (?, ?)",
+          [userId, postId],
+          (err) => {
+            if (err) {
+              console.error("Error liking post:", err);
+              return res.status(500).json({ error: "Internal Server Error" });
+            }
+            res.status(200).json({ message: "Post liked successfully" });
+          }
+        );
+      }
     }
   );
 });
 
 app.post("/api/signin", (req, res) => {
-  // const Name = "Void";
-  // const username = "void";
-  // const email = "void@void.com";
-  // const password = "void";
   const { username, email, password } = req.body;
 
   // Hash the password before storing it in the database
@@ -153,6 +173,43 @@ app.post("/api/signin", (req, res) => {
       }
     );
     res.status(200).json({ message: "User created successfully" });
+  });
+});
+
+app.post("/api/login", (req, res) => {
+  const { username, password } = req.body;
+
+  // Retrieve user information based on the provided email
+  const query = "SELECT id, username, password FROM user WHERE username = ?";
+  pool.query(query, [username], (err, results) => {
+    if (err) {
+      console.error("Error fetching user:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Check if the user exists
+    if (results.length === 0) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Compare the provided password with the hashed password from the database
+    let user = results[0];
+    bcrypt.compare(password, user.password, (bcryptErr, passwordMatch) => {
+      if (bcryptErr) {
+        console.error("Error comparing passwords:", bcryptErr);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (!passwordMatch) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      // Successful login
+    });
+    return res.status(200).json({
+      id: user.id,
+      message: "Loggin successfully",
+    });
   });
 });
 
