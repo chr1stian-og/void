@@ -3,6 +3,10 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import axios from "axios";
 import attach from "../assets/images/paperclip.svg";
+import like from "../assets/images/heart.svg";
+import remove from "../assets/images/trash-2.svg";
+import edit from "../assets/images/edit-2.svg";
+import follow from "../assets/images/user-plus.svg";
 
 const sendButton = require("../assets/images/void.png");
 
@@ -81,90 +85,110 @@ function Home() {
   return (
     <>
       <Navbar />
-      <center>
-        <div className="flex flex-col m-5 justify-center align-center">
-          <div className="fixed top-5 left-0 right-0 flex justify-center">
-            <h1 className="text-red font-bold">VOID SOCIAL</h1>
-          </div>
+      <div className="flex flex-col my-5 justify-center align-center">
+        <div className="fixed top-5 left-0 right-0 flex justify-center">
+          <h1 className="text-red font-bold">
+            VOID <span className="text-[#FF0054]">SOCIAL</span>
+            <span className="mx-[2px]"></span>.
+          </h1>
+        </div>
 
-          <div className="max-h-[650px] overflow-y-auto flex flex-col justify-center items-center mt-32">
-            {posts.length > 0 ? (
-              posts
-                .slice()
-                .reverse()
-                .map((post, id) => (
-                  <div className="flex flex-col">
+        <div className="max-h-[700px] overflow-y-auto flex flex-col items-center mt-20">
+          {posts.length > 0 ? (
+            posts
+              .slice()
+              .reverse()
+              .map((post, id) => (
+                <div className="flex flex-row">
+                  <div className="flex flex-col mx-4 xs:w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-150">
                     <div
                       key={id}
-                      className="flex flex-row w-[600px] justify-between mb-1"
+                      className="flex flex-row justify-between mb-1"
                     >
-                      <h4>@{user.username}</h4>
+                      <div className="flex flex-row gap-2">
+                        <h4>@{user.username}</h4>
+                        <button className="hidden hover:flex hover:cursor-pointer">
+                          <img src={follow} width={15} />
+                        </button>
+                      </div>
                       <h4>{post.category}</h4>
                     </div>
                     <div className="flex flex-row mb-2 items-center justify-between gap-10">
-                      <h3>{post.content}</h3>
+                      <h3 className="max-w-[800px]">{post.content}</h3>
                       <h4>{formatSubmittedTime(post.submitted_time)}</h4>
                     </div>
                     <hr className="w-full border-t-1 border-[#ffffff2c] my-4" />
                   </div>
-                ))
-            ) : (
-              <div>No posts available</div>
-            )}
-          </div>
-
-          <div className="fixed bottom-0">
-            <div className="flex flex-row mx-20 mt-52 justify-center align-center gap-2">
-              <select
-                className="bg-red-800 px-4 py-2 border-2 rounded-md"
-                onChange={handleCategoryChange}
-                value={newPost.category}
-              >
-                <option>Thought</option>
-                <option>Memes</option>
-                <option>Images</option>
-                <option>Finance</option>
-                <option>Entertainment</option>
-                <option>News</option>
-                <option>Sports</option>
-              </select>
-              <input
-                id="content"
-                ref={inputRef}
-                onKeyDown={handleKeyDown}
-                onChange={(e) => {
-                  setNewPost({ ...newPost, content: e.target.value });
-                }}
-                placeholder="Start writing..."
-                className="border-white w-[500px] border-2 px-4 py-2 rounded-md"
-              />
-
-              <button
-                onClick={() => fileInputRef.current.click()}
-                className="bg-red-800 rounded-md px-8 bold"
-              >
-                <div className="flex flex-row gap-4">
-                  <img src={attach} width={20} alt="attach" />
+                  <div className=" hover:flex flex-col gap-4 transition-all duration-300">
+                    <span className="p-5  opacity-0 hover:opacity-100 hover:cursor-pointer transition-all duration-300">
+                      <img src={like} width={15} />
+                    </span>
+                    <span className="p-5  opacity-0 hover:opacity-100 hover:cursor-pointer transition-all duration-300">
+                      <img src={edit} width={15} />
+                    </span>
+                    <span className="p-5  opacity-0 hover:opacity-100 hover:cursor-pointer transition-all duration-300">
+                      <img src={remove} width={15} />
+                    </span>
+                  </div>
                 </div>
-              </button>
+              ))
+          ) : (
+            <div>No posts available</div>
+          )}
+        </div>
 
-              <button
-                onClick={sendNewPost}
-                className="bg-red-800 rounded-md px-8 bold"
-              >
-                <div className="flex flex-row gap-4">
-                  <span className="buttonText bold text-sm uppercase">
-                    Send
-                  </span>
-                  <img src={sendButton} width={20} alt="send" />
-                </div>
-              </button>
-            </div>
+        <div className="fixed bottom-0 w-full flex justify-center">
+          <div className="flex flex-row mx-20 mt-52 justify-center items-center gap-2">
+            <select
+              className="bg-[#FF0054] border-0 px-4 py-2 rounded-md"
+              onChange={handleCategoryChange}
+              value={newPost.category}
+            >
+              <option>Thought</option>
+              <option>Memes</option>
+              <option>Images</option>
+              <option>Finance</option>
+              <option>Entertainment</option>
+              <option>News</option>
+              <option>Sports</option>
+            </select>
+            <input
+              id="content"
+              ref={inputRef}
+              onKeyDown={handleKeyDown}
+              onChange={(e) => {
+                setNewPost({ ...newPost, content: e.target.value });
+              }}
+              placeholder="Share your thoughts..."
+              className="border-[#8884] md:w-[350px] lg:w-[500px] border-0 px-4 py-2 rounded-md"
+            />
+
+            <button
+              onClick={() => fileInputRef.current.click()}
+              className="bg-[#8884] rounded-md px-8 py-2 bold"
+            >
+              <div className="flex flex-row gap-4">
+                <img
+                  src={attach}
+                  width={20}
+                  alt="attach"
+                  className="bold text-sm uppercase"
+                />
+              </div>
+            </button>
+
+            <button
+              onClick={sendNewPost}
+              className="bg-[#FF0054] rounded-md px-8 py-2 bold"
+            >
+              <div className="flex flex-row gap-4">
+                <span className="buttonText bold text-sm uppercase">Send</span>
+                <img src={sendButton} width={15} alt="send" />
+              </div>
+            </button>
           </div>
         </div>
-      </center>
-
-      <Footer />
+      </div>
     </>
   );
 }

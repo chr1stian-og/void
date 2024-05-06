@@ -50,6 +50,13 @@ h4 {
   color: #fff;
 }
 
+select {
+  font-family: "gilroy-bold";
+  font-size: 1rem;
+  color: #fff;
+  padding: 2px;
+}
+
 .buttonText {
   font-family: "gilroy-bold";
   font-size: 0.8rem;
