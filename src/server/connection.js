@@ -163,16 +163,17 @@ app.post("/api/signin", (req, res) => {
       "INSERT INTO user (username, email, password) VALUES (?, ?, ?)";
     pool.query(
       insertQuery,
-
       [username, email, hashedPassword],
       (insertErr, results) => {
         if (insertErr) {
           console.error("Error creating a new user:", insertErr);
           return res.status(500).json({ error: "Internal Server Error" });
         }
+
+        // Send the response only after the user is successfully inserted
+        res.status(200).json({ message: "User created successfully" });
       }
     );
-    res.status(200).json({ message: "User created successfully" });
   });
 });
 

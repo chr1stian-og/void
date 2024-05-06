@@ -12,7 +12,7 @@ const sendButton = require("../assets/images/void.png");
 
 const api = axios.create({ baseURL: "http://localhost:3001" });
 
-function Home() {
+function Home({ userLogged }) {
   const inputRef = useRef(null);
   const fileInputRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -33,6 +33,7 @@ function Home() {
   const [editedPost, setEditedPost] = useState("");
 
   useEffect(() => {
+    console.log(userLogged);
     inputRef.current.focus();
     fetchPosts();
   }, []);
@@ -154,7 +155,7 @@ function Home() {
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className={`h-5 w-6 hover:cursor-pointer ${
-                            post.likes > 0  ? "text-[#FF0054]" : "none"
+                            post.likes > 0 ? "text-[#FF0054]" : "none"
                           }`}
                           fill={`${post.likes > 0 ? "#FF0054" : "none"}`}
                           viewBox="0 0 16 24"

@@ -9,7 +9,6 @@ const api = axios.create({ baseURL: "http://localhost:3001" });
 
 function Signin({ updateUserId }) {
   const inputRef = useRef(null);
-  let dialogTimeout;
   let navigate = useNavigate();
 
   const [user, setUser] = useState({
@@ -49,26 +48,36 @@ function Signin({ updateUserId }) {
   // };
 
   const signup = () => {
-    if (!validator.isEmail(user.email))
+    // Check if the email format is correct
+    if (!validator.isEmail(user.email)) {
       return alert("The email format is incorrect");
-
-    if (user.password === passwordToMatch) {
-      api
-        .post("/api/signin", {
-          username: user.username,
-          email: user.email,
-          password: user.password,
-        })
-        .then((res) => {
-          updateUserId(res.data.id);
-          // checkLogin();
-        })
-        .catch((err) => {
-          alert("Check email or password");
-        });
-    } else {
-      alert("Passwords do not match");
     }
+
+    // Check if passwords match
+    if (user.password !== passwordToMatch) {
+      return alert("Passwords do not match");
+    }
+
+    // Make a POST request to the backend to sign up the user
+    api
+      .post("/api/signin", {
+        username: user.username,
+        email: user.email,
+        password: user.password,
+      })
+      .then((res) => {
+        // Handle successful signup
+        console.log("User created successfully");
+        navigate("/login", { replace: true });
+      });
+    // .catch((err) => {
+    //   // Handle signup errors
+    //   if (err.response && err.response.status === 400) {
+    //     alert("Check email or password"); // Backend validation error
+    //   } else {
+    //     alert("An error occurred while signing up"); // Other errors
+    //   }
+    // });
   };
 
   //hangle the Enter key response

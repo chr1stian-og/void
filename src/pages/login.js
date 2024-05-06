@@ -59,6 +59,8 @@ function Login({ updateUserId }) {
       .post("/api/login", { username: user.username, password: user.password })
       .then((res) => {
         console.log(res.data);
+        updateUserId(res.data.id);
+
         navigate("/home", { replace: true });
       })
       .catch((err) => {

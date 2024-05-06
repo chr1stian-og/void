@@ -16,8 +16,11 @@ function RoutesComponent() {
     <>
       <Routes>
         <Route path="/" element={<Login user={user} />} />
-        <Route path="/login" element={<Login user={user} />} />
-        <Route path="/home" element={<Home />} />
+        <Route
+          path="/login"
+          element={<Login user={user} updateUserId={updateUserId} />}
+        />
+        <Route path="/home" element={<Home userLogged={user} />} />
         <Route path="/signin" element={<Signin user={user} />} />
       </Routes>
     </>
