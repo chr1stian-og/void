@@ -6,10 +6,10 @@ import Home from "../pages/home";
 import { useState } from "react";
 
 function RoutesComponent() {
-  const [user, setUser] = useState({ id: 0, email: "", password: "" });
+  const [user, setUser] = useState({});
 
   const updateUserId = (newId) => {
-    setUser((prevUser) => ({ ...prevUser, id: newId }));
+    setUser(newId); // Update the user object with the new ID
   };
 
   return (

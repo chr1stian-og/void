@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import attach from "../assets/images/paperclip.svg";
 import like from "../assets/images/heart.svg";
 import remove from "../assets/images/trash-2.svg";
@@ -14,19 +15,21 @@ const api = axios.create({ baseURL: "http://localhost:3001" });
 
 function Home({ userLogged }) {
   const inputRef = useRef(null);
+  let navigate = useNavigate();
+
   const fileInputRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [user, setUser] = useState({
-    id: 4,
-    username: "void",
-    email: "",
-    password: "",
+    id: userLogged.id || 0,
+    username: userLogged.username || "",
+    email: userLogged.email || "",
   });
 
   const [newPost, setNewPost] = useState({
     category: "Thought",
     content: "",
-    userId: user.id,
+    userId: userLogged.id,
+    username: userLogged.username,
   });
 
   const [posts, setPosts] = useState([]);
@@ -34,6 +37,10 @@ function Home({ userLogged }) {
 
   useEffect(() => {
     console.log(userLogged);
+    if (user.id === 0) {
+      return navigate("/login", { replace: true });
+    }
+
     inputRef.current.focus();
     fetchPosts();
   }, []);
@@ -54,6 +61,7 @@ function Home({ userLogged }) {
     api
       .post("/api/newPost", newPost)
       .then((res) => {
+        console.log(newPost);
         fetchPosts();
         // Additional alert or actions can go here
       })
@@ -128,10 +136,10 @@ function Home({ userLogged }) {
               .slice()
               .reverse()
               .map((post, id) => (
-                <div className="flex flex-col mx-4 xs:w-[450px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-150">
+                <div className="flex flex-col mx-4 min-w-[350px] xs:w-[450px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-300">
                   <div key={id} className="flex flex-row justify-between mb-1">
                     <div className="flex flex-row gap-2">
-                      <h4>@{user.username}</h4>
+                      <h4>@{post.username}</h4>
                       <button
                         className={` ${
                           post.user_id !== user.id ? "" : "hidden"
@@ -155,9 +163,15 @@ function Home({ userLogged }) {
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className={`h-5 w-6 hover:cursor-pointer ${
-                            post.likes > 0 ? "text-[#FF0054]" : "none"
+                            post.likes > 0
+                              ? "text-[#FF0054]"
+                              : "none"
                           }`}
-                          fill={`${post.likes > 0 ? "#FF0054" : "none"}`}
+                          fill={`${
+                            post.username === user.username && post.likes > 0
+                              ? "#FF0054"
+                              : "none"
+                          }`}
                           viewBox="0 0 16 24"
                           stroke="currentColor"
                         >

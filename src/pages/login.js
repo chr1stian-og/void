@@ -10,7 +10,6 @@ const api = axios.create({ baseURL: "http://localhost:3001" });
 function Login({ updateUserId }) {
   const inputRef = useRef(null);
   let navigate = useNavigate();
-  let dialogTimeout;
 
   const [user, setUser] = useState({ id: 0, username: "", password: "" });
   const [showDialog, setShowDialog] = useState({
@@ -24,33 +23,6 @@ function Login({ updateUserId }) {
     // checkLogin();
   }, []);
 
-  // const alert = (message, type, timer) => {
-  //   if (dialogTimeout) {
-  //     clearTimeout(dialogTimeout);
-  //   }
-  //   setShowDialog({
-  //     status: true,
-  //     message: message,
-  //     type: type ? type : "success",
-  //   });
-  //   dialogTimeout = setTimeout(() => {
-  //     setShowDialog({ status: false, message: "", type: "" });
-  //   }, timer || 5000);
-  // };
-
-  // const checkLogin = () => {
-  //   // api.get("/api/testToken").then((res) => {
-  //   //   if (
-  //   //     res.data.token === "Token is invalid, Please Log in." ||
-  //   //     res.data.token === null ||
-  //   //     res.data.token === undefined
-  //   //   )
-  //   //     return;
-  //   //   alert("");
-  //   //   return navigate("/home", { replace: true });
-  //   });
-  // };
-
   const login = async () => {
     if (user.password.length === 0) {
       return alert("Type in a password");
@@ -58,9 +30,7 @@ function Login({ updateUserId }) {
     api
       .post("/api/login", { username: user.username, password: user.password })
       .then((res) => {
-        console.log(res.data);
-        updateUserId(res.data.id);
-
+        updateUserId(res.data);
         navigate("/home", { replace: true });
       })
       .catch((err) => {

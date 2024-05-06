@@ -59,7 +59,8 @@ app.get("/api/testdb", (req, res) => {
 
 app.get("/api/posts", (req, res) => {
   // Retrieve all posts from the database
-  const query = "SELECT * FROM posts";
+  const query =
+    "SELECT posts.*, user.username FROM posts JOIN user ON posts.user_id = user.id";
   pool.query(query, (err, results) => {
     if (err) {
       console.error("Error fetching posts:", err);
@@ -71,20 +72,19 @@ app.get("/api/posts", (req, res) => {
   });
 });
 
-//Post Requests
+// Post Requests
 app.post("/api/newPost", (req, res) => {
-  const { content, category, userId } = req.body;
-
-  // Insert the new note into the database
+  const { content, category, userId, username } = req.body;
+  // Insert the new post into the database
   const query =
-    "INSERT INTO posts (content, category, user_id) VALUES (?, ?, ?)";
+    "INSERT INTO posts (content, category, user_id, username) VALUES (?, ?, ?, ?)";
 
-  pool.query(query, [content, category, userId], (err, results) => {
+  pool.query(query, [content, category, userId, username], (err, results) => {
     if (err) {
       console.error("Error publishing a new post:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
-    // Return the ID of the newly created note
+    // Return the ID of the newly created post
     res
       .status(201)
       .json({ id: results.insertId, message: "Post published successfully" });
@@ -208,6 +208,8 @@ app.post("/api/login", (req, res) => {
       // Successful login
     });
     return res.status(200).json({
+      username: user.username,
+      email: user.email,
       id: user.id,
       message: "Loggin successfully",
     });
