@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function Navbar() {
+function Navbar({ userLogged }) {
   let navigate = useNavigate();
 
   return (
@@ -10,7 +10,12 @@ function Navbar() {
           VOID <span className="text-[#FF0054]">SOCIAL</span>
           <span className="mx-[2px]"></span>.
         </h1>
-        <h3 onClick={() => navigate("/login", { replace: true })}>LOGIN</h3>
+        <h3
+          className="hover:cursor-pointer duration-150 transition-all hover:text-[#FF0054]"
+          onClick={() => navigate("/login", { replace: true })}
+        >
+          {userLogged || "LOGIN"}
+        </h3>
       </div>
     </>
   );

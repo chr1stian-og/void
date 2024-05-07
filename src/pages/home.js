@@ -57,6 +57,7 @@ function Home({ userLogged }) {
       .post("/api/newPost", newPost)
       .then((res) => {
         console.log(newPost);
+        document.getElementById("content").value = "";
         fetchPosts();
         // Additional alert or actions can go here
       })
@@ -116,7 +117,7 @@ function Home({ userLogged }) {
 
   return (
     <>
-      <Navbar />
+      <Navbar userLogged={userLogged.username} />
       <div className="flex flex-col my-5 justify-center align-center">
         <div className="max-h-[700px] overflow-y-auto flex flex-col items-center mt-20">
           {posts.length > 0 ? (
@@ -146,19 +147,14 @@ function Home({ userLogged }) {
                     <div className="flex flex-row items-center gap-2 ">
                       <span
                         onClick={() => likePost(post.id)}
-                        className={`opacity-100 p-2 hover:cursor-pointer ml-[-10px] mr-[-8px] transition-all duration-300`}
+                        className={`z-50 opacity-100 p-2 hover:cursor-pointer ml-[-10px] mr-[-8px] transition-all duration-300`}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className={`h-5 w-6 hover:cursor-pointer ${
                             post.likes > 0 ? "text-[#FF0054]" : "none"
                           }`}
-                          fill={`${
-                            post.username === userLogged?.username &&
-                            post.likes > 0
-                              ? "#FF0054"
-                              : "none"
-                          }`}
+                          fill={`${post.likes > 0 ? "#FF0054" : "none"}`}
                           viewBox="0 0 16 24"
                           stroke="currentColor"
                         >
