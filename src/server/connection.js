@@ -154,7 +154,7 @@ app.post("/api/likePost", (req, res) => {
       }
 
       if (results.length > 0) {
-        // User already liked the post, proceed with removing the like
+        // User already liked the post, removing the like
         pool.query(
           "DELETE FROM likes WHERE user_id = ? AND post_id = ?",
           [userId, postId],
@@ -167,7 +167,7 @@ app.post("/api/likePost", (req, res) => {
           }
         );
       } else {
-        // User hasn't liked the post yet, proceed with liking the post
+        // User hasn't liked the post yet, liking the post
         pool.query(
           "INSERT INTO likes (user_id, post_id) VALUES (?, ?)",
           [userId, postId],

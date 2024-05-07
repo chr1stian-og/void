@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+const logo = require("../assets/images/void.png");
 
 function Navbar({ userLogged }) {
   let navigate = useNavigate();
@@ -10,6 +11,9 @@ function Navbar({ userLogged }) {
           VOID <span className="text-[#FF0054]">SOCIAL</span>
           <span className="mx-[2px]"></span>.
         </h1>
+        <span>
+          <img src={logo} alt="logo" width={25} height={25} />
+        </span>
         <h3
           className="hover:cursor-pointer duration-150 transition-all hover:text-[#FF0054]"
           onClick={() => navigate("/login", { replace: true })}

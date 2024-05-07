@@ -9,7 +9,7 @@ import remove from "../assets/images/trash-2.svg";
 import edit from "../assets/images/edit-2.svg";
 import follow from "../assets/images/user-plus.svg";
 
-const sendButton = require("../assets/images/void.png");
+const sendButton = require("../assets/images/void2.png");
 
 const api = axios.create({ baseURL: "http://localhost:3001" });
 
