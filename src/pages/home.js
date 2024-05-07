@@ -23,6 +23,9 @@ function Home({ userLogged }) {
   let navigate = useNavigate();
 
   const [selectedImage, setSelectedImage] = useState(null);
+
+  const [editedContent, setEditedContent] = useState("");
+
   const [newPost, setNewPost] = useState({
     category: "Thought",
     content: "",
@@ -32,7 +35,6 @@ function Home({ userLogged }) {
   });
 
   const [posts, setPosts] = useState([]);
-  const [editedPost, setEditedPost] = useState("");
   const [likedPosts, setLikedPosts] = useState();
 
   const handleImageChange = (e) => {
@@ -56,7 +58,7 @@ function Home({ userLogged }) {
     console.log(posts.images);
     inputRef.current.focus();
     fetchPosts();
-  }, [posts]);
+  }, []);
 
   const fetchLikes = async () => {
     await api
@@ -68,6 +70,7 @@ function Home({ userLogged }) {
         console.log(err);
       });
   };
+
   const fetchPosts = async () => {
     await api
       .get(`/api/posts`)
@@ -99,11 +102,13 @@ function Home({ userLogged }) {
   };
 
   const editPost = (editedPost, id) => {
-    if (editedPost === "") return alert("Can't leave it blank");
+    // if (editedPost.length === 0) return alert("Can't leave it blank");
 
+    setEditedContent("edited");
+    console.log(editedContent, id);
     api
-      .post("/api/updateNote", {
-        content: editedPost,
+      .post("/api/editPost", {
+        content: editedContent,
         id: id,
       })
       .then((res) => {
@@ -172,11 +177,6 @@ function Home({ userLogged }) {
     }
   }
 
-  const getImageUrlFromBuffer = (buffer) => {
-    const blob = new Blob([buffer.data], { type: "image/jpeg" });
-    return URL.createObjectURL(blob);
-  };
-
   return (
     <>
       <Navbar userLogged={userLogged?.username} />
@@ -186,90 +186,95 @@ function Home({ userLogged }) {
             posts
               .slice()
               .reverse()
-              .map((post, id) => (
-                <div className="flex z-50 flex-col mx-4 min-w-[300px] xs:w-[450px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-150">
-                  <div key={id} className="flex flex-row justify-between mb-1">
-                    <div className="flex flex-row gap-2">
-                      <h4>@{post.username}</h4>
-                      <button
-                        onClick={() => followUser(post.user_id)}
-                        className={` ${
-                          post.user_id !== userLogged?.id ? "" : "hidden"
-                        } hover:cursor-pointer`}
+              .map((post, id) => {
+                return (
+                  <>
+                    <div className="flex z-50 flex-col mx-4 min-w-[300px] xs:w-[450px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-150">
+                      <div
+                        key={id}
+                        className="flex flex-row justify-between mb-1"
                       >
-                        <img src={follow} width={15} />
-                      </button>
-                    </div>
-                    <h4>{post.category}</h4>
-                  </div>
-                  {post.image && (
-                    <div className="flex flex-row gap-4">
-                      <img
-                        src={getImageUrlFromBuffer(post.image)}
-                        width={50}
-                        alt="Post Image"
-                      />
-                    </div>
-                  )}
+                        <div className="flex flex-row gap-2">
+                          <h4>@{post.username}</h4>
+                          <button
+                            onClick={() => followUser(post.user_id)}
+                            className={` ${
+                              post.user_id !== userLogged?.id ? "" : "hidden"
+                            } hover:cursor-pointer`}
+                          >
+                            <img src={follow} width={15} />
+                          </button>
+                        </div>
+                        <h4>{post.category}</h4>
+                      </div>
+                      <div className="flex flex-row gap-4">
+                        <img src={post.image} alt="Post Image" />
+                      </div>
 
-                  <div className="flex flex-row items-center justify-between gap-10">
-                    <h3 className="max-w-[800px]">{post.content}</h3>
-                    <h4>{formatSubmittedTime(post.submitted_time)}</h4>
-                  </div>
+                      <div className="flex flex-row items-center justify-between gap-10">
+                        <h3 className="max-w-[800px]">{post.content}</h3>
+                        <h4>{formatSubmittedTime(post.submitted_time)}</h4>
+                      </div>
 
-                  <div className="flex flex-row gap-4">
-                    <div className="flex flex-row items-center gap-2 ">
-                      <span
-                        onClick={() => likePost(post.id)}
-                        className={`z-50 opacity-100 p-2 hover:cursor-pointer ml-[-10px] mr-[-8px] transition-all duration-150`}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className={`h-5 w-6 hover:cursor-pointer ${
-                            likedPosts &&
-                            likedPosts?.find((item) => item.post_id === post.id)
-                              ? "text-[#FF0054]"
-                              : "none"
-                          }`}
-                          fill={`${
-                            likedPosts &&
-                            likedPosts?.find((item) => item.post_id === post.id)
-                              ? "#FF0054"
-                              : "none"
-                          }`}
-                          viewBox="0 0 16 24"
-                          stroke="currentColor"
+                      <div className="flex flex-row gap-4">
+                        <div className="flex flex-row items-center gap-2 ">
+                          <span
+                            onClick={() => likePost(post.id)}
+                            className={`z-50 opacity-100 p-2 hover:cursor-pointer ml-[-10px] mr-[-8px] transition-all duration-150`}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className={`h-5 w-6 hover:cursor-pointer ${
+                                likedPosts &&
+                                likedPosts?.find(
+                                  (item) => item.post_id === post.id
+                                )
+                                  ? "text-[#FF0054]"
+                                  : "none"
+                              }`}
+                              fill={`${
+                                likedPosts &&
+                                likedPosts?.find(
+                                  (item) => item.post_id === post.id
+                                )
+                                  ? "#FF0054"
+                                  : "none"
+                              }`}
+                              viewBox="0 0 16 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M12 21l-1.35-1.214C5.85 15.88 2 12.35 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.42.81 4.5 2.09C13.08 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.85-3.85 7.38-8.65 11.29L12 21z"
+                              />
+                            </svg>
+                          </span>
+                          <h5>{post.likes}</h5>
+                        </div>
+                        {/* <span
+                          onClick={() => editPost(editedContent, post.id)}
+                          className={`${
+                            post.user_id !== userLogged?.id ? "hidden" : ""
+                          }  hover:cursor-pointer p-2 transition-all duration-150`}
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 21l-1.35-1.214C5.85 15.88 2 12.35 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.42.81 4.5 2.09C13.08 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.85-3.85 7.38-8.65 11.29L12 21z"
-                          />
-                        </svg>
-                      </span>
-                      <h5>{post.likes}</h5>
+                          <img src={edit} width={18} />
+                        </span> */}
+                        <span
+                          onClick={() => deletePost(post.id)}
+                          className={`${
+                            post.user_id !== userLogged?.id ? "hidden" : ""
+                          }  hover:cursor-pointer p-2 transition-all duration-150`}
+                        >
+                          <img src={remove} width={18} />
+                        </span>
+                      </div>
+                      <hr className="w-full border-t-1 border-[#ffffff2c] my-4" />
                     </div>
-                    {/* <span
-                      onClick={(editedPost) => editPost(editedPost, post.id)}
-                      className={`${
-                        post.user_id !== userLogged?.id ? "hidden" : ""
-                      }  hover:cursor-pointer p-2 transition-all duration-150`}
-                    >
-                      <img src={edit} width={18} />
-                    </span> */}
-                    <span
-                      onClick={() => deletePost(post.id)}
-                      className={`${
-                        post.user_id !== userLogged?.id ? "hidden" : ""
-                      }  hover:cursor-pointer p-2 transition-all duration-150`}
-                    >
-                      <img src={remove} width={18} />
-                    </span>
-                  </div>
-                  <hr className="w-full border-t-1 border-[#ffffff2c] my-4" />
-                </div>
-              ))
+                  </>
+                );
+              })
           ) : (
             <div>No posts available</div>
           )}

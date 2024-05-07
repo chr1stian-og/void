@@ -203,6 +203,20 @@ app.post("/api/likePost", (req, res) => {
   );
 });
 
+app.post("/api/editPost", (req, res) => {
+  const { content, id } = req.body;
+  // Insert the new note into the database
+  const query = "UPDATE notes SET content = ? WHERE id = ?";
+  pool.query(query, [content, noteId], (err, results) => {
+    if (err) {
+      console.error("Error updating note:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    // Return the ID of the newly created note
+    res.status(201).json({ message: "Note updated successfully" });
+  });
+});
+
 app.post("/api/signin", (req, res) => {
   const { username, email, password } = req.body;
 
