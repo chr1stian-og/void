@@ -140,6 +140,22 @@ app.post("/api/findUserName", (req, res) => {
   );
 });
 
+app.post("/api/getLikedPosts", (req, res) => {
+  const userId = req.body.userId;
+  pool.query(
+    "SELECT * FROM likes WHERE user_id = ?",
+    [userId],
+    (err, results) => {
+      if (err) {
+        console.error("Error fetching liked posts:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      // Return the fetched posts
+      res.status(200).json(results);
+    }
+  );
+});
+
 app.post("/api/likePost", (req, res) => {
   const { userId, postId } = req.body;
 

@@ -29,17 +29,28 @@ function Home({ userLogged }) {
 
   const [posts, setPosts] = useState([]);
   const [editedPost, setEditedPost] = useState("");
+  const [likedPosts, setLikedPosts] = useState();
 
   useEffect(() => {
-    console.log(userLogged);
     if (userLogged === null) {
       return navigate("/login", { replace: true });
     }
 
     inputRef.current.focus();
     fetchPosts();
+    fetchLikes();
   }, []);
 
+  const fetchLikes = async () => {
+    await api
+      .post(`/api/getLikedPosts`, { userId: userLogged?.id })
+      .then((res) => {
+        setLikedPosts(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const fetchPosts = async () => {
     await api
       .get(`/api/posts`)
@@ -119,6 +130,7 @@ function Home({ userLogged }) {
       .post("/api/likePost", { userId: userLogged?.id, postId: likedPostId })
       .then((res) => {
         fetchPosts();
+        fetchLikes();
       });
   };
 
@@ -184,9 +196,17 @@ function Home({ userLogged }) {
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className={`h-5 w-6 hover:cursor-pointer ${
-                            post.likes > 0 ? "text-[#FF0054]" : "none"
+                            likedPosts &&
+                            likedPosts?.find((item) => item.post_id === post.id)
+                              ? "text-[#FF0054]"
+                              : "none"
                           }`}
-                          fill={`${post.likes > 0 ? "#FF0054" : "none"}`}
+                          fill={`${
+                            likedPosts &&
+                            likedPosts?.find((item) => item.post_id === post.id)
+                              ? "#FF0054"
+                              : "none"
+                          }`}
                           viewBox="0 0 16 24"
                           stroke="currentColor"
                         >
