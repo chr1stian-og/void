@@ -13,23 +13,20 @@ const pool = mysql.createPool({
   port: 3306,
   database: "sys",
   password: "Df59c2577#",
-  connectionLimit: 10, // Adjust according to your needs
-  handshakeTimeout: 30000, // 30 seconds, adjust as needed
+  connectionLimit: 10,
+  handshakeTimeout: 30000,
 });
 
 //Endpoints
 app.use(express.json());
 app.use(
   cors({
-    // origin: ALLOWED_ORIGIN,
-    // origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
-//Get Requests
 app.get("/api/test", (req, res) => {
   res.status(200).json("API IS WORKING!");
 });
@@ -218,7 +215,7 @@ app.post("/api/login", (req, res) => {
 
 //starting listener
 try {
-  app.listen(PORT, () => console.log(`Backend on port ${PORT}...`));
+  app.listen(PORT, () => console.log(`Backend running on port ${PORT}...`));
 } catch (e) {
   LOGGER.error(
     "An error ocurred with the server. Read the error log for more details.",

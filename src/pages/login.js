@@ -24,17 +24,21 @@ function Login({ updateUserId }) {
   }, []);
 
   const login = async () => {
+    if (user.username.length === 0) {
+      return alert("Type in a username");
+    }
     if (user.password.length === 0) {
       return alert("Type in a password");
     }
-    api
-      .post("/api/login", { username: user.username, password: user.password })
+    await api
+      .post("/api/login", user)
       .then((res) => {
         updateUserId(res.data);
         navigate("/home", { replace: true });
       })
       .catch((err) => {
-        alert("Incorret username or password");
+        console.log(err);
+        // alert("Incorret username or password");
       });
   };
 

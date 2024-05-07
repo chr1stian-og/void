@@ -19,17 +19,12 @@ function Home({ userLogged }) {
 
   const fileInputRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [user, setUser] = useState({
-    id: userLogged.id || 0,
-    username: userLogged.username || "",
-    email: userLogged.email || "",
-  });
 
   const [newPost, setNewPost] = useState({
     category: "Thought",
     content: "",
-    userId: userLogged.id,
-    username: userLogged.username,
+    userId: userLogged?.id,
+    username: userLogged?.username,
   });
 
   const [posts, setPosts] = useState([]);
@@ -37,7 +32,7 @@ function Home({ userLogged }) {
 
   useEffect(() => {
     console.log(userLogged);
-    if (user.id === 0) {
+    if (userLogged === null) {
       return navigate("/login", { replace: true });
     }
 
@@ -89,7 +84,7 @@ function Home({ userLogged }) {
 
   const likePost = (likedPostId) => {
     api
-      .post("/api/likePost", { userId: user.id, postId: likedPostId })
+      .post("/api/likePost", { userId: userLogged?.id, postId: likedPostId })
       .then((res) => {
         fetchPosts();
       });
@@ -123,13 +118,6 @@ function Home({ userLogged }) {
     <>
       <Navbar />
       <div className="flex flex-col my-5 justify-center align-center">
-        <div className="fixed top-5 left-0 right-0 flex justify-center">
-          <h1 className="text-red font-bold">
-            VOID <span className="text-[#FF0054]">SOCIAL</span>
-            <span className="mx-[2px]"></span>.
-          </h1>
-        </div>
-
         <div className="max-h-[700px] overflow-y-auto flex flex-col items-center mt-20">
           {posts.length > 0 ? (
             posts
@@ -142,7 +130,7 @@ function Home({ userLogged }) {
                       <h4>@{post.username}</h4>
                       <button
                         className={` ${
-                          post.user_id !== user.id ? "" : "hidden"
+                          post.user_id !== userLogged?.id ? "" : "hidden"
                         } hover:cursor-pointer`}
                       >
                         <img src={follow} width={15} />
@@ -163,12 +151,11 @@ function Home({ userLogged }) {
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className={`h-5 w-6 hover:cursor-pointer ${
-                            post.likes > 0
-                              ? "text-[#FF0054]"
-                              : "none"
+                            post.likes > 0 ? "text-[#FF0054]" : "none"
                           }`}
                           fill={`${
-                            post.username === user.username && post.likes > 0
+                            post.username === userLogged?.username &&
+                            post.likes > 0
                               ? "#FF0054"
                               : "none"
                           }`}
@@ -188,14 +175,14 @@ function Home({ userLogged }) {
                     <span
                       onClick={(editedPost) => editPost(editedPost, post.id)}
                       className={`${
-                        post.user_id !== user.id ? "hidden" : ""
+                        post.user_id !== userLogged?.id ? "hidden" : ""
                       }  hover:cursor-pointer p-2 transition-all duration-300`}
                     >
                       <img src={edit} width={18} />
                     </span>
                     <span
                       className={`${
-                        post.user_id !== user.id ? "hidden" : ""
+                        post.user_id !== userLogged?.id ? "hidden" : ""
                       }  hover:cursor-pointer p-2 transition-all duration-300`}
                     >
                       <img src={remove} width={18} />

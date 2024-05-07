@@ -7,7 +7,7 @@ import validator from "validator";
 // const api = axios.create({ baseURL: "http://localhost:3001" });
 const api = axios.create({ baseURL: "http://localhost:3001" });
 
-function Signin({ updateUserId }) {
+function Signin() {
   const inputRef = useRef(null);
   let navigate = useNavigate();
 
@@ -26,26 +26,7 @@ function Signin({ updateUserId }) {
 
   useEffect(() => {
     inputRef.current.focus();
-    // checkLogin();
   }, []);
-
-  // const checkLogin = () => {
-  //   api
-  //     .get("/api/testToken")
-  //     .then((res) => {
-  //       if (
-  //         res.data.token === "Token is invalid, Please Log in." ||
-  //         res.data.token === null ||
-  //         res.data.token === undefined
-  //       )
-  //         return;
-  //       alert("");
-  //       return navigate("/home", { replace: true });
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
 
   const signup = () => {
     // Check if the email format is correct
@@ -58,7 +39,6 @@ function Signin({ updateUserId }) {
       return alert("Passwords do not match");
     }
 
-    // Make a POST request to the backend to sign up the user
     api
       .post("/api/signin", {
         username: user.username,
@@ -69,15 +49,10 @@ function Signin({ updateUserId }) {
         // Handle successful signup
         console.log("User created successfully");
         navigate("/login", { replace: true });
+      })
+      .catch((err) => {
+        console.log("Error registring a new user:", err);
       });
-    // .catch((err) => {
-    //   // Handle signup errors
-    //   if (err.response && err.response.status === 400) {
-    //     alert("Check email or password"); // Backend validation error
-    //   } else {
-    //     alert("An error occurred while signing up"); // Other errors
-    //   }
-    // });
   };
 
   //hangle the Enter key response
