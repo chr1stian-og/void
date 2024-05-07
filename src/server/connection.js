@@ -88,6 +88,26 @@ app.post("/api/newPost", (req, res) => {
   });
 });
 
+app.post("/api/deletePost", (req, res) => {
+  const postId = req.body.postId;
+
+  // Delete the note from the database
+  const deleteQuery = "DELETE FROM posts WHERE id = ?";
+  pool.query(deleteQuery, [postId], (err, results) => {
+    if (err) {
+      console.error("Error deleting Post:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Check if the note was found and deleted
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.status(200).json({ message: "Post deleted successfully" });
+  });
+});
+
 app.get("/api/getLikes", (req, res) => {
   const query = "SELECT * FROM likes";
   pool.query(query, (err, results) => {
@@ -99,6 +119,25 @@ app.get("/api/getLikes", (req, res) => {
     // Return the fetched posts
     res.status(200).json(results);
   });
+});
+
+app.post("/api/findUserName", (req, res) => {
+  const userId = req.body.postUserId;
+  pool.query(
+    "SELECT username FROM user WHERE id = ?",
+    [userId],
+    (err, results) => {
+      if (err) {
+        console.error("Error checking if user liked post:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      if (results.length > 0) {
+        return res.status(200).json({ username: results[0].username });
+      } else {
+        return res.status(404).json({ error: "User not found" });
+      }
+    }
+  );
 });
 
 app.post("/api/likePost", (req, res) => {

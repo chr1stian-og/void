@@ -40,8 +40,8 @@ function Home({ userLogged }) {
     fetchPosts();
   }, []);
 
-  const fetchPosts = () => {
-    api
+  const fetchPosts = async () => {
+    await api
       .get(`/api/posts`)
       .then((res) => {
         console.log(res.data);
@@ -83,6 +83,37 @@ function Home({ userLogged }) {
       });
   };
 
+  const deletePost = (postId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this Post?"
+    );
+
+    if (confirmed) {
+      api
+        .post("/api/deletePost", { postId: postId })
+        .then((res) => {
+          fetchPosts();
+        })
+        .catch((err) => {
+          alert("Couldn't delete the post");
+          console.log(err);
+        });
+    }
+  };
+  const followUser = (postUserId) => {
+    console.log(postUserId);
+    const findUserName = "";
+    api
+      .post("/api/findUserName", { postUserId: postUserId })
+      .then((res) => {
+        alert("Now following " + res.data.username);
+      })
+      .catch((err) => {
+        alert("Couldn't find the user name");
+        console.log(err);
+      });
+  };
+
   const likePost = (likedPostId) => {
     api
       .post("/api/likePost", { userId: userLogged?.id, postId: likedPostId })
@@ -117,7 +148,7 @@ function Home({ userLogged }) {
 
   return (
     <>
-      <Navbar userLogged={userLogged.username} />
+      <Navbar userLogged={userLogged?.username} />
       <div className="flex flex-col my-5 justify-center align-center">
         <div className="max-h-[700px] overflow-y-auto flex flex-col items-center mt-20">
           {posts.length > 0 ? (
@@ -125,11 +156,12 @@ function Home({ userLogged }) {
               .slice()
               .reverse()
               .map((post, id) => (
-                <div className="flex flex-col mx-4 min-w-[350px] xs:w-[450px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-300">
+                <div className="flex z-50 flex-col mx-4 min-w-[350px] xs:w-[450px] sm:w-[600px] md:w-[800px] lg:w-[1000px]  transition-all duration-300">
                   <div key={id} className="flex flex-row justify-between mb-1">
                     <div className="flex flex-row gap-2">
                       <h4>@{post.username}</h4>
                       <button
+                        onClick={() => followUser(post.user_id)}
                         className={` ${
                           post.user_id !== userLogged?.id ? "" : "hidden"
                         } hover:cursor-pointer`}
@@ -168,15 +200,16 @@ function Home({ userLogged }) {
                       </span>
                       <h5>{post.likes}</h5>
                     </div>
-                    <span
+                    {/* <span
                       onClick={(editedPost) => editPost(editedPost, post.id)}
                       className={`${
                         post.user_id !== userLogged?.id ? "hidden" : ""
                       }  hover:cursor-pointer p-2 transition-all duration-300`}
                     >
                       <img src={edit} width={18} />
-                    </span>
+                    </span> */}
                     <span
+                      onClick={() => deletePost(post.id)}
                       className={`${
                         post.user_id !== userLogged?.id ? "hidden" : ""
                       }  hover:cursor-pointer p-2 transition-all duration-300`}
