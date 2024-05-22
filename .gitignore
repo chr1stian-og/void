@@ -11,6 +11,8 @@
 /build
 
 # misc
+*-lock.*
+
 .gitignore
 .DS_Store
 .env.local

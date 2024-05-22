@@ -72,3 +72,11 @@ select {
   font-size: 0.8rem;
   color: #fff;
 }
+
+.btn {
+  background: #646cff;
+  color: #fff;
+}
+.btn:disabled {
+  background: #ccc;
+}

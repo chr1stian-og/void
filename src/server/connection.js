@@ -3,6 +3,7 @@ const app = express();
 const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
 //GLOBAL VARIABLES
 const PORT = 3001;
@@ -17,29 +18,27 @@ const pool = mysql.createPool({
   handshakeTimeout: 30000,
 });
 
-//Endpoints
+//Configurations
 app.use(express.json());
-app.use(
-  cors({
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use(express.json({ limit: "5025mb0mb" }));
+app.use(express.urlencoded({ limit: "25mb", extended: true }));
+app.use(cors());
+app.use(bodyParser.json({ limit: "25mb" }));
+app.use(bodyParser.urlencoded({ limit: "25mb", extended: true }));
+
+//Endpoints
 
 app.get("/api/test", (req, res) => {
   res.status(200).json("API IS WORKING!");
 });
 
 app.get("/api/testdb", (req, res) => {
-  // Try to connect to the database and execute a simple query
   pool.getConnection((error, connection) => {
     if (error) {
       console.error("Error connecting to database:", error);
       res.status(500).send("Error connecting to database");
     } else {
       connection.query("SELECT 1 + 1 AS result", (queryError, results) => {
-        // Release the connection back to the pool
         connection.release();
 
         if (queryError) {
@@ -47,7 +46,10 @@ app.get("/api/testdb", (req, res) => {
           res.status(500).send("Error executing query");
         } else {
           console.log("Database connection test successful");
-          res.status(200).json({ result: results[0].result });
+          res.status(200).json({
+            message: "Database connection test successful",
+            result: results[0].result,
+          });
         }
       });
     }
@@ -55,7 +57,6 @@ app.get("/api/testdb", (req, res) => {
 });
 
 app.get("/api/posts", (req, res) => {
-  // Retrieve all posts from the database
   const query =
     "SELECT posts.*, user.username FROM posts JOIN user ON posts.user_id = user.id";
   pool.query(query, (err, results) => {
@@ -64,15 +65,17 @@ app.get("/api/posts", (req, res) => {
       return res.status(500).json({ error: "Internal Server Error" });
     }
 
-    // Return the fetched posts
     res.status(200).json(results);
   });
 });
 
-// Post Requests
-app.post("/api/newPost", (req, res) => {
-  const { content, category, userId, username, image } = req.body;
-  const query =
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
+app.post("/api/newPost", upload.single("image"), (req, res) => {
+  const { content, category, userId, username } = req.body;
+  const image = req.file ? req.file.path : null; 
+    const query =
     "INSERT INTO posts (content, category, user_id, username, image) VALUES (?, ?, ?, ?, ?)";
 
   pool.query(
@@ -83,7 +86,6 @@ app.post("/api/newPost", (req, res) => {
         console.error("Error publishing a new post:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      // Return the ID of the newly created post
       res
         .status(201)
         .json({ id: results.insertId, message: "Post published successfully" });
@@ -94,53 +96,18 @@ app.post("/api/newPost", (req, res) => {
 app.post("/api/deletePost", (req, res) => {
   const postId = req.body.postId;
 
-  // Delete the note from the database
   const deleteQuery = "DELETE FROM posts WHERE id = ?";
   pool.query(deleteQuery, [postId], (err, results) => {
     if (err) {
       console.error("Error deleting Post:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
-
-    // Check if the note was found and deleted
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: "Post not found" });
     }
 
     res.status(200).json({ message: "Post deleted successfully" });
   });
-});
-
-app.get("/api/getLikes", (req, res) => {
-  const query = "SELECT * FROM likes";
-  pool.query(query, (err, results) => {
-    if (err) {
-      console.error("Error fetching posts:", err);
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
-
-    // Return the fetched posts
-    res.status(200).json(results);
-  });
-});
-
-app.post("/api/findUserName", (req, res) => {
-  const userId = req.body.postUserId;
-  pool.query(
-    "SELECT username FROM user WHERE id = ?",
-    [userId],
-    (err, results) => {
-      if (err) {
-        console.error("Error checking if user liked post:", err);
-        return res.status(500).json({ error: "Internal Server Error" });
-      }
-      if (results.length > 0) {
-        return res.status(200).json({ username: results[0].username });
-      } else {
-        return res.status(404).json({ error: "User not found" });
-      }
-    }
-  );
 });
 
 app.post("/api/getLikedPosts", (req, res) => {
@@ -153,10 +120,19 @@ app.post("/api/getLikedPosts", (req, res) => {
         console.error("Error fetching liked posts:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      // Return the fetched posts
       res.status(200).json(results);
     }
   );
+});
+
+app.get("/api/images", (req, res) => {
+  pool.query("SELECT image FROM posts", (err, results) => {
+    if (err) {
+      console.error("Error fetching liked posts:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    res.status(200).json(results);
+  });
 });
 
 app.post("/api/likePost", (req, res) => {
@@ -205,14 +181,13 @@ app.post("/api/likePost", (req, res) => {
 
 app.post("/api/editPost", (req, res) => {
   const { content, id } = req.body;
-  // Insert the new note into the database
+
   const query = "UPDATE notes SET content = ? WHERE id = ?";
   pool.query(query, [content, noteId], (err, results) => {
     if (err) {
       console.error("Error updating note:", err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
-    // Return the ID of the newly created note
     res.status(201).json({ message: "Note updated successfully" });
   });
 });

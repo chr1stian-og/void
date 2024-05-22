@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import validator from "validator";
 import axios from "axios";
 
-// const api = axios.create({ baseURL: "http://localhost:3001" });
 const api = axios.create({ baseURL: "http://localhost:3001" });
 
 function Login({ updateUserId }) {
@@ -20,7 +19,6 @@ function Login({ updateUserId }) {
 
   useEffect(() => {
     inputRef.current.focus();
-    // checkLogin();
   }, []);
 
   const login = async () => {
@@ -38,11 +36,9 @@ function Login({ updateUserId }) {
       })
       .catch((err) => {
         console.log(err);
-        // alert("Incorret username or password");
       });
   };
 
-  //hangle the Enter key response
   function handleKeyDown(event) {
     if (event.keyCode === 13) {
       login();
@@ -115,9 +111,10 @@ function Login({ updateUserId }) {
       </div>
 
       <div className="absolute bottom-4 flex justify-center items-center w-full">
-        <h2 className="text-[#ffffff40]">
-          username and password: test@test.com
-        </h2>
+        <div className="flex flex-col">
+          <h2 className="text-[#ffffff40]">Username: void</h2>
+          <h2 className="text-[#ffffff40]">Password: void@void.com</h2>
+        </div>
       </div>
     </>
   );

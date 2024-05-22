@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import validator from "validator";
 
-// const api = axios.create({ baseURL: "http://localhost:3001" });
 const api = axios.create({ baseURL: "http://localhost:3001" });
 
 function Signin() {
@@ -29,12 +28,10 @@ function Signin() {
   }, []);
 
   const signup = () => {
-    // Check if the email format is correct
     if (!validator.isEmail(user.email)) {
       return alert("The email format is incorrect");
     }
 
-    // Check if passwords match
     if (user.password !== passwordToMatch) {
       return alert("Passwords do not match");
     }
@@ -46,7 +43,6 @@ function Signin() {
         password: user.password,
       })
       .then((res) => {
-        // Handle successful signup
         console.log("User created successfully");
         navigate("/login", { replace: true });
       })
@@ -55,7 +51,6 @@ function Signin() {
       });
   };
 
-  //hangle the Enter key response
   function handleKeyDown(event) {
     if (event.keyCode === 13) {
       signup();
